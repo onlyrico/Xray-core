@@ -8,9 +8,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/test/bufconn"
-
 	"github.com/xtls/xray-core/app/router"
 	. "github.com/xtls/xray-core/app/router/command"
 	"github.com/xtls/xray-core/app/stats"
@@ -18,6 +15,9 @@ import (
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/features/routing"
 	"github.com/xtls/xray-core/testing/mocks"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 func TestServiceSubscribeRoutingStats(t *testing.T) {
@@ -81,7 +81,7 @@ func TestServiceSubscribeRoutingStats(t *testing.T) {
 	// Client goroutine
 	go func() {
 		defer lis.Close()
-		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			errCh <- err
 			return
@@ -215,7 +215,7 @@ func TestServiceSubscribeSubsetOfFields(t *testing.T) {
 	// Client goroutine
 	go func() {
 		defer lis.Close()
-		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			errCh <- err
 			return
@@ -272,7 +272,7 @@ func TestServiceSubscribeSubsetOfFields(t *testing.T) {
 	}
 }
 
-func TestSerivceTestRoute(t *testing.T) {
+func TestServiceTestRoute(t *testing.T) {
 	c := stats.NewChannel(&stats.ChannelConfig{
 		SubscriberLimit: 1,
 		BufferSize:      16,
@@ -319,7 +319,7 @@ func TestSerivceTestRoute(t *testing.T) {
 				TargetTag: &router.RoutingRule_Tag{Tag: "out"},
 			},
 		},
-	}, mocks.NewDNSClient(mockCtl), mocks.NewOutboundManager(mockCtl)))
+	}, mocks.NewDNSClient(mockCtl), mocks.NewOutboundManager(mockCtl), nil))
 
 	lis := bufconn.Listen(1024 * 1024)
 	bufDialer := func(context.Context, string) (net.Conn, error) {
@@ -338,7 +338,7 @@ func TestSerivceTestRoute(t *testing.T) {
 	// Client goroutine
 	go func() {
 		defer lis.Close()
-		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+		conn, err := grpc.DialContext(context.Background(), "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			errCh <- err
 		}

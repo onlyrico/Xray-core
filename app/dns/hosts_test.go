@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-
 	. "github.com/xtls/xray-core/app/dns"
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/net"
@@ -51,7 +50,7 @@ func TestStaticHosts(t *testing.T) {
 		},
 	}
 
-	hosts, err := NewStaticHosts(pb, nil)
+	hosts, err := NewStaticHosts(pb)
 	common.Must(err)
 
 	{
