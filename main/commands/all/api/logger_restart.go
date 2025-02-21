@@ -11,11 +11,18 @@ var cmdRestartLogger = &base.Command{
 	Short:       "Restart the logger",
 	Long: `
 Restart the logger of Xray.
+
 Arguments:
-	-s, -server 
+
+	-s, -server <server:port>
 		The API server address. Default 127.0.0.1:8080
-	-t, -timeout
-		Timeout seconds to call API. Default 3
+
+	-t, -timeout <seconds>
+		Timeout in seconds for calling API. Default 3
+
+Example:
+
+	{{.Exec}} {{.LongName}} --server=127.0.0.1:8080
 `,
 	Run: executeRestartLogger,
 }
@@ -33,5 +40,5 @@ func executeRestartLogger(cmd *base.Command, args []string) {
 	if err != nil {
 		base.Fatalf("failed to restart logger: %s", err)
 	}
-	showResponese(resp)
+	showJSONResponse(resp)
 }

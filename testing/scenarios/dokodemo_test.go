@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/sync/errgroup"
-
 	"github.com/xtls/xray-core/app/log"
 	"github.com/xtls/xray-core/app/proxyman"
 	"github.com/xtls/xray-core/common"
@@ -22,6 +20,7 @@ import (
 	"github.com/xtls/xray-core/proxy/vmess/outbound"
 	"github.com/xtls/xray-core/testing/servers/tcp"
 	"github.com/xtls/xray-core/testing/servers/udp"
+	"golang.org/x/sync/errgroup"
 )
 
 func TestDokodemoTCP(t *testing.T) {
@@ -86,11 +85,9 @@ func TestDokodemoTCP(t *testing.T) {
 						Listen:   net.NewIPOrDomain(net.LocalHostIP),
 					}),
 					ProxySettings: serial.ToTypedMessage(&dokodemo.Config{
-						Address: net.NewIPOrDomain(dest.Address),
-						Port:    uint32(dest.Port),
-						NetworkList: &net.NetworkList{
-							Network: []net.Network{net.Network_TCP},
-						},
+						Address:  net.NewIPOrDomain(dest.Address),
+						Port:     uint32(dest.Port),
+						Networks: []net.Network{net.Network_TCP},
 					}),
 				},
 			},
@@ -172,7 +169,7 @@ func TestDokodemoUDP(t *testing.T) {
 	common.Must(err)
 	defer CloseServer(server)
 
-	clientPortRange := uint32(5)
+	clientPortRange := uint32(3)
 	retry := 1
 	clientPort := uint32(udp.PickPort())
 	for {
@@ -184,11 +181,9 @@ func TestDokodemoUDP(t *testing.T) {
 						Listen:   net.NewIPOrDomain(net.LocalHostIP),
 					}),
 					ProxySettings: serial.ToTypedMessage(&dokodemo.Config{
-						Address: net.NewIPOrDomain(dest.Address),
-						Port:    uint32(dest.Port),
-						NetworkList: &net.NetworkList{
-							Network: []net.Network{net.Network_UDP},
-						},
+						Address:  net.NewIPOrDomain(dest.Address),
+						Port:     uint32(dest.Port),
+						Networks: []net.Network{net.Network_UDP},
 					}),
 				},
 			},
