@@ -4,11 +4,11 @@ import (
 	"encoding/binary"
 	"sync"
 
-	"golang.org/x/net/dns/dnsmessage"
-
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/buf"
+	"github.com/xtls/xray-core/common/errors"
 	"github.com/xtls/xray-core/common/serial"
+	"golang.org/x/net/dns/dnsmessage"
 )
 
 func PackMessage(msg *dnsmessage.Message) (*buf.Buffer, error) {
@@ -97,7 +97,7 @@ func (r *TCPReader) ReadMessage() (*buf.Buffer, error) {
 		return nil, err
 	}
 	if size > buf.Size {
-		return nil, newError("message size too large: ", size)
+		return nil, errors.New("message size too large: ", size)
 	}
 	b := buf.New()
 	if _, err := b.ReadFullFrom(r.reader, int32(size)); err != nil {
